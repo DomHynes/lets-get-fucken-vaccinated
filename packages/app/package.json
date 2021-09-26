@@ -36,5 +36,8 @@
 			"preset": "stitches",
 			"stitchesConfig": "stitches.config.ts"
 		}
+	},
+	"prisma": {
+		"schema": "prisma/schema.prisma"
 	}
 }
