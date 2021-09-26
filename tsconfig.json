@@ -1,0 +1,13 @@
+{
+    "references": [
+        {
+            "path": "packages/scraper"
+        },
+        {
+            "path": "packages/app"
+        },
+    ],
+    "files": [],
+    "include": [],
+    "exclude": ["**/node_modules"]
+}
