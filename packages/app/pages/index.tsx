@@ -28,7 +28,10 @@ const Fadein = styled.div({
 })
 
 const IndexPage = () => {
-	const { data } = trpc.useQuery(['centres'], { ssr: false, refetchInterval: 10000 })
+	const { data } = trpc.useQuery(['centres'], {
+		ssr: false,
+		refetchInterval: 10000,
+	})
 
 	return (
 		<Container>
