@@ -64,6 +64,8 @@ export const batchRouter = router<Context>()
 				})
 			}
 
+			console.log(`updated: ${input.centreId}`)
+
 			return prisma.appointment.findMany()
 		},
 	})
