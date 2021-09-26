@@ -1,8 +1,16 @@
-import { router } from '@trpc/server'
+import { router, TRPCError } from '@trpc/server'
 import { z } from 'zod'
+import { Context } from '../../../utils/context'
 import prisma from '../../../utils/prisma'
 
-export const batchRouter = router()
+export const batchRouter = router<Context>()
+	// this protects all procedures defined next in this router
+	.middleware(async ({ ctx, next }) => {
+		if (!ctx.isAdmin) {
+			throw new TRPCError({ code: 'UNAUTHORIZED' })
+		}
+		return next()
+	})
 	.mutation('centres', {
 		input: z
 			.object({

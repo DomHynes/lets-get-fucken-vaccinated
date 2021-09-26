@@ -1,9 +1,10 @@
 import { router } from '@trpc/server'
 import * as trpcNext from '@trpc/server/adapters/next'
+import { Context, createContext } from '../../../utils/context'
 import prisma from '../../../utils/prisma'
 import { batchRouter } from './batch'
 
-const appRouter = router()
+const appRouter = router<Context>()
 	.query('centres', {
 		resolve() {
 			return prisma.centre.findMany({
@@ -30,5 +31,5 @@ export type AppRouter = typeof appRouter
 // export API handler
 export default trpcNext.createNextApiHandler({
 	router: appRouter,
-	createContext: () => null,
+	createContext,
 })
