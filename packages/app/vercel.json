@@ -1,6 +1,6 @@
 {
     "functions": {
-      "api/trpc/[trpc].js": {
+      "api/trpc/[trpc].ts": {
         "includeFiles": "prisma/schema.prisma"
       }
     }
