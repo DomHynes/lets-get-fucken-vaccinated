@@ -6,4 +6,7 @@ import fetch from 'isomorphic-unfetch'
 export const client = createTRPCClient<AppRouter>({
 	url: config.get('backend.url'),
 	fetch,
+	headers: {
+		authorization: `Bearer ${config.get('backend.token')}`,
+	},
 })

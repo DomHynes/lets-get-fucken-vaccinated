@@ -10,7 +10,7 @@ import { utcToZonedTime } from 'date-fns-tz'
 import { client } from '../services/client'
 
 export const init = async () => {
-	const browser = await launch({ headless: false })
+	const browser = await launch({ headless: true })
 
 	const [page] = await browser.pages()
 
