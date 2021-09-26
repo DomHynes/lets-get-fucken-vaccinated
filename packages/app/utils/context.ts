@@ -8,7 +8,7 @@ export async function createContext({
 }: trpcNext.CreateNextContextOptions) {
 	if (req.headers.authorization) {
 		const [, token] = req.headers.authorization?.split(' ')
-		if (verify(config.get('JWT_SECRET'), token)) {
+		if (verify(process.env.JWT_SECRET as string, token)) {
 			return {
 				isAdmin: true,
 			}
