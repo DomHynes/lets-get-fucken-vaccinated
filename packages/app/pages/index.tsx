@@ -1,7 +1,11 @@
 import React from 'react'
 import tw, { styled } from 'twin.macro'
+import { AppRouter } from '..'
 import CentreCard from '../components/CentreCard'
-import { trpc } from '../utils/trpc'
+
+import { createReactQueryHooks } from '@trpc/react'
+
+const trpc = createReactQueryHooks<AppRouter>()
 
 const Container = styled.div({
 	...tw`container flex flex-col justify-center min-h-screen gap-10 mx-auto `,
