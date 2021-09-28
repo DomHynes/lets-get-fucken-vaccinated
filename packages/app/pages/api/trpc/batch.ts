@@ -11,21 +11,17 @@ export const batchRouter = router<Context>()
 		}
 		return next()
 	})
-	.mutation('centres', {
-		input: z
-			.object({
-				id: z.string(),
-				name: z.string(),
+	.mutation('centre', {
+		input: z.object({
+			id: z.string(),
+			name: z.string(),
+		}),
+		resolve: async ({ input: centre }) => {
+			await prisma.centre.upsert({
+				create: centre,
+				where: { id: centre.id },
+				update: { name: centre.name },
 			})
-			.array(),
-		resolve: async ({ input }) => {
-			for (const centre of input) {
-				await prisma.centre.upsert({
-					create: centre,
-					where: { id: centre.id },
-					update: { name: centre.name },
-				})
-			}
 			return prisma.centre.findMany()
 		},
 	})
