@@ -8,14 +8,14 @@ import { createReactQueryHooks } from '@trpc/react'
 const trpc = createReactQueryHooks<AppRouter>()
 
 const Container = styled.div({
-	...tw`container flex flex-col h-screen gap-10 px-4 mx-auto mt-5 duration-700 ease-in-out transform`,
+	...tw`container flex flex-col h-screen gap-10 px-4 mx-auto mt-10 duration-700 ease-in-out transform`,
 })
 
 const Header = styled.h1({
-	...tw`text-5xl font-bold text-center md:text-left md:text-7xl lg:text-8xl`,
+	...tw`text-4xl font-bold text-center md:text-left sm:text-5xl md:text-7xl lg:text-8xl`,
 	variants: {
 		hasGradient: {
-			true: tw`text-5xl text-transparent drop-shadow-2xl filter from-pink-400 to-blue-600 bg-gradient-to-br bg-clip-text md:text-8xl lg:text-9xl`,
+			true: tw`text-transparent drop-shadow-2xl filter from-pink-400 to-blue-600 bg-gradient-to-br bg-clip-text sm:text-6xl md:text-8xl lg:text-9xl`,
 		},
 	},
 })
@@ -35,8 +35,8 @@ const TextWrapper = styled.div({
 	...tw`h-screen relative space-y-10 duration-700 ease-in-out transform width[100%]`,
 	variants: {
 		collapsed: {
-			true: tw`top-0`,
-			false: tw`h-0 overflow-visible top-1/2`,
+			false: tw`top-0`,
+			true: tw`h-0 -mt-48 overflow-visible top-1/2`,
 		},
 	},
 })
@@ -65,7 +65,7 @@ const IndexPage = () => {
 
 	return (
 		<Container>
-			<TextWrapper collapsed={!!data}>
+			<TextWrapper collapsed={!data}>
 				<div>
 					<Header>let's get fucken</Header>
 					<Header hasGradient>VACCINATED</Header>

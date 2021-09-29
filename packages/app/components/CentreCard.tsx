@@ -31,7 +31,7 @@ const CentreCard = (props: { name: string; appointments: Appointment[] }) => {
 		<Card>
 			<CardHeader>
 				<CardHeaderText>{props.name}</CardHeaderText>{' '}
-				{props.appointments.length && (
+				{!!props.appointments.length && (
 					<CardHeaderSubtitle>
 						{props.appointments.length} appointments
 					</CardHeaderSubtitle>
