@@ -1,5 +1,5 @@
 {
 	"backend": {
-		"url": "http://localhost:3000/api/trpc"
+		"url": "https://lets-get-fucken-vaccinated.vercel.app/api/trpc"
 	}
 }

@@ -1,3 +1,7 @@
+import dotenv from 'dotenv'
+import { Page } from 'puppeteer'
+if (process.env.NODE_ENV === 'production') dotenv.config({ path: '../.env' })
+
 import {
 	bypassCaptcha,
 	clickThroughPersonalInfo,
@@ -10,10 +14,15 @@ import {
 	login,
 	processProvider,
 	verifyEmail,
+	processCentres,
 } from './utils/phases'
 
+let page: Page
+
 const main = async () => {
-	const { browser, page } = await init()
+	const out = await init()
+	const browser = out.browser
+	page = out.page
 
 	await page.goto('https://portal.cvms.vic.gov.au/covidvaccine-booking-slots/')
 	console.log('logging in')
@@ -26,13 +35,13 @@ const main = async () => {
 	let captchaText
 	while (!passedCaptcha) {
 		console.log('attempting captcha')
-		const audioPage = await initAudioPage({ browser })
-
 		const src = await getAudioSrc({ page })
-		captchaText = await transcribeCaptcha({ audioPage, src })
-		await bypassCaptcha({ page, captchaText })
 
-		if (page.url().endsWith('/book/')) {
+		const audioPage = await initAudioPage({ browser })
+		captchaText = await transcribeCaptcha({ audioPage, src })
+
+		await bypassCaptcha({ page, captchaText })
+		if (!page.url().endsWith('/book/')) {
 			passedCaptcha = true
 		}
 	}
@@ -40,15 +49,19 @@ const main = async () => {
 	await clickThroughPersonalInfo({ page })
 	await clickThroughVax({ page })
 
-	const { providers } = await getProviderIds({ page })
+	const { centres, providers } = await getProviderIds({ page })
+	await processCentres({ centres })
 
-	for (const provider of providers) {
-		await processProvider({ page, provider })
+	while (true) {
+		for (const provider of providers) {
+			await processProvider({ page, provider })
+		}
 	}
-
-	await page.waitForTimeout(1000000)
-
-	await browser.close()
 }
 
-main()
+main().catch(e => {
+	page.screenshot({ path: '/usr/src/app/error.png' }).finally(() => {
+		console.error(e)
+		process.exit(1)
+	})
+})

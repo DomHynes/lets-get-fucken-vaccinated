@@ -5,4 +5,7 @@ module.exports = {
 		host: process.env.EMAIL_HOST,
 		port: Number(process.env.EMAIL_PORT),
 	},
+	backend: {
+		token: process.env.ADMIN_TOKEN,
+	},
 }

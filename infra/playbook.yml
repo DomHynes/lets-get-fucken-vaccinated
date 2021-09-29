@@ -1,0 +1,36 @@
+---
+- name: install node
+  hosts: server
+  vars:
+    nodejs_version: "14.x"
+    nodejs_npm_global_packages:
+      - yarn
+      - pm2
+
+  roles:
+    - geerlingguy.nodejs
+  tasks:
+    - name: copy
+      ansible.posix.synchronize:
+        src: ../packages
+        dest: /usr/src/app
+        rsync_opts:
+          - "--exclude=**/node_modules"
+    - name: copy
+      ansible.posix.synchronize:
+        src: ../yarn.lock
+        dest: /usr/src/app
+    - name: deps
+      shell: /usr/local/lib/npm/bin/yarn
+      args:
+        chdir: /usr/src/app
+    - name: stop app
+      shell: /usr/local/lib/npm/bin/pm2 delete scraper
+      args:
+        chdir: /usr/src/app/packages/scraper
+      ignore_errors: yes
+    - name: start app
+      shell: NODE_ENV=production /usr/local/lib/npm/bin/pm2 start npm --name "scraper" -- start
+      args:
+        chdir: /usr/src/app/packages/scraper
+      ignore_errors: yes

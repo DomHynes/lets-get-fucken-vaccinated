@@ -10,7 +10,7 @@ import { utcToZonedTime } from 'date-fns-tz'
 import { client } from '../services/client'
 
 export const init = async () => {
-	const browser = await launch({ headless: true })
+	const browser = await launch({ headless: true, args: ['--no-sandbox'] })
 
 	const [page] = await browser.pages()
 
@@ -93,11 +93,6 @@ export const transcribeCaptcha = async ({
 	audioPage: Page
 	src: string
 }) => {
-	//@ts-ignore
-	await audioPage._client.send('Page.setDownloadBehavior', {
-		behavior: 'allow',
-		downloadPath: '/tmp/',
-	})
 	try {
 		await audioPage.goto(`https://portal.cvms.vic.gov.au/${src}`)
 	} catch (e) {}
@@ -130,6 +125,7 @@ export const bypassCaptcha = async ({
 	await page.focus('input[type=text]')
 	await page.type('input[type=text]', captchaText)
 	await page.keyboard.press('Enter')
+	await page.waitForTimeout(5000)
 }
 
 export const clickThroughPersonalInfo = async ({ page }: { page: Page }) => {
@@ -216,4 +212,22 @@ export const processProvider = async ({
 	await page.waitForSelector('.btn.btn-default.submit-btn.VICbtn-ghost')
 	await page.click('.btn.btn-default.submit-btn.VICbtn-ghost')
 	await page.waitForTimeout(3000)
+}
+
+export const processCentres = async ({
+	centres,
+}: {
+	centres: {
+		[id: string]: string
+	}
+}) => {
+	const newCentres: { id: string; name: string }[] = []
+
+	Object.entries(centres).forEach(([id, name]) => {
+		newCentres.push({ id, name })
+	})
+
+	for (const centre of newCentres) {
+		await client.mutation('batchcentre', centre)
+	}
 }

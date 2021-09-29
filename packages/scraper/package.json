@@ -33,6 +33,7 @@
 		"typescript": "^4.3.5"
 	},
 	"scripts": {
+		"start": "node -r @swc-node/register -r dotenv/config index",
 		"dev": "node -r @swc-node/register -r dotenv/config index",
 		"test": "node -r @swc-node/register test",
 		"scrape": "node -r @swc-node/register scrape"
