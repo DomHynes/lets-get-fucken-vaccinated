@@ -8,8 +8,15 @@ const appRouter = router<Context>()
 	.query('centres', {
 		resolve() {
 			return prisma.centre.findMany({
-				include: { appointments: true },
-				where: { appointments: { every: { available: true } } },
+				select: {
+					id: true,
+					name: true,
+					appointments: {
+						where: {
+							available: true,
+						},
+					},
+				},
 				orderBy: [
 					{
 						appointments: {
