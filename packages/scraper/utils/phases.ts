@@ -196,10 +196,7 @@ export const processProvider = async ({
 	)
 
 	const centreAppointments = appointments.map(a =>
-		utcToZonedTime(
-			parse(a, 'dd-MM-yyyy hh:mm a', new Date()),
-			'Australia/Melbourne',
-		).toDateString(),
+		parse(a, 'dd-MM-yyyy hh:mm a', new Date()).toISOString(),
 	)
 
 	await client
