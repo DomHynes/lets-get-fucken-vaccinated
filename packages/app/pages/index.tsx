@@ -41,6 +41,8 @@ const TextWrapper = styled.div({
 	},
 })
 
+const Footer = styled.div(tw`py-10 text-center`)
+
 const IndexPage = () => {
 	const { data } = trpc.useQuery(['centres'], {
 		ssr: false,
@@ -71,8 +73,8 @@ const IndexPage = () => {
 					<Header hasGradient>VACCINATED</Header>
 				</div>
 				<Subtitle>
-					This shows Pfizer appointments available at State Vaccination Centres
-					over the next four weeks.
+					This shows Pfizer appointments available at Victorian State
+					Vaccination Centres over the next four weeks.
 				</Subtitle>
 				<Fadein show={!!data}>
 					{withAppointments?.map(d => (
@@ -81,6 +83,12 @@ const IndexPage = () => {
 					{withoutAppointments?.map(d => (
 						<CentreCard name={d.name} appointments={d.appointments} />
 					))}
+					<Footer>
+						made with love and fury by{' '}
+						<a href="https://twitter.com/domhynes" tw="underline font-bold">
+							domhynes
+						</a>
+					</Footer>
 				</Fadein>
 			</TextWrapper>
 		</Container>
