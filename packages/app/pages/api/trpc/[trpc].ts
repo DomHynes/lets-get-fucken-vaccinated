@@ -15,6 +15,9 @@ const appRouter = router<Context>()
 						where: {
 							available: true,
 						},
+						orderBy: {
+							time: 'asc',
+						},
 					},
 				},
 				orderBy: [

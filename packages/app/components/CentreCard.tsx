@@ -41,7 +41,10 @@ const CentreCard = (props: { name: string; appointments: Appointment[] }) => {
 			<AppointmentWrapper>
 				{props.appointments.map(a => (
 					<StyledAppointment pfizer>
-						{new Date(a.time).toLocaleString()}
+						{new Date(a.time).toLocaleString('en-AU', {
+							dateStyle: 'medium',
+							timeStyle: 'short',
+						})}
 					</StyledAppointment>
 				))}
 			</AppointmentWrapper>
