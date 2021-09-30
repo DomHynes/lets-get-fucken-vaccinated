@@ -18,14 +18,10 @@ const appRouter = router<Context>()
 						orderBy: {
 							time: 'asc',
 						},
+						take: 40,
 					},
 				},
 				orderBy: [
-					{
-						appointments: {
-							_count: 'desc',
-						},
-					},
 					{
 						name: 'asc',
 					},
