@@ -2,22 +2,11 @@ import React, { useMemo } from 'react'
 import tw, { styled } from 'twin.macro'
 import { AppRouter } from '..'
 import CentreCard from '../components/CentreCard'
-
-import { createReactQueryHooks } from '@trpc/react'
-
-const trpc = createReactQueryHooks<AppRouter>()
+import { Hero } from '../components/Hero'
+import { trpc } from '../hooks/trpc'
 
 const Container = styled.div({
 	...tw`container flex flex-col h-screen gap-10 px-4 mx-auto mt-10 duration-700 ease-in-out transform`,
-})
-
-const Header = styled.h1({
-	...tw`text-4xl font-bold text-center md:text-left sm:text-5xl md:text-7xl lg:text-8xl`,
-	variants: {
-		hasGradient: {
-			true: tw`text-transparent drop-shadow-2xl filter from-pink-400 to-blue-600 bg-gradient-to-br bg-clip-text sm:text-6xl md:text-8xl lg:text-9xl`,
-		},
-	},
 })
 
 const Subtitle = styled.p(tw`p-2 font-semibold md:text-xl`)
@@ -68,10 +57,7 @@ const IndexPage = () => {
 	return (
 		<Container>
 			<TextWrapper collapsed={!data}>
-				<div>
-					<Header>let's get fucken</Header>
-					<Header hasGradient>VACCINATED</Header>
-				</div>
+				<Hero />
 				<Subtitle>
 					This shows Pfizer appointments available at Victorian State
 					Vaccination Centres over the next four weeks.

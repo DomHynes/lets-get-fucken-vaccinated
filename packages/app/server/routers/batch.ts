@@ -1,7 +1,7 @@
 import { router, TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { Context } from '../../../utils/context'
-import prisma from '../../../utils/prisma'
+import { Context } from '../../utils/context'
+import prisma from '../../utils/prisma'
 
 export const batchRouter = router<Context>()
 	// this protects all procedures defined next in this router

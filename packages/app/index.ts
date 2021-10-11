@@ -1,1 +1,1 @@
-export type { AppRouter } from './pages/api/trpc/[trpc]'
+export type { AppRouter } from './server/routers/app'

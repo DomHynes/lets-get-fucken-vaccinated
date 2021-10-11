@@ -15,6 +15,7 @@ model Centre {
   name         String
   appointments Appointment[]
 
+  location Unsupported("\"public\".geography")?
 }
 
 model Appointment {
@@ -27,4 +28,12 @@ model Appointment {
 
 
   @@unique([time, centreId])
+}
+
+model Postcode {
+  id       String                               @id @default(uuid())
+  postcode String
+  locality String
+  state    String
+  location Unsupported("\"public\".geography")?
 }

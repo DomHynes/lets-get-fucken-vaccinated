@@ -1,7 +1,13 @@
+import { httpBatchLink } from '@trpc/client/links/httpBatchLink'
+import { loggerLink } from '@trpc/client/links/loggerLink'
 import { withTRPC } from '@trpc/next'
+import { createReactQueryHooks } from '@trpc/react'
 import { AppProps } from 'next/app'
+import superjson from 'superjson'
+import { AppRouter } from '..'
 import globalStyles from '../styles/globalStyles'
-import { AppRouter } from './api/trpc/[trpc]'
+
+const trpc = createReactQueryHooks<AppRouter>()
 
 const App = ({ Component, pageProps }: AppProps) => {
 	globalStyles()
@@ -27,6 +33,7 @@ export default withTRPC<AppRouter>({
 
 		return {
 			url,
+			transformer: superjson,
 			queryClientConfig: {
 				defaultOptions: { queries: { refetchOnWindowFocus: false } },
 			},
