@@ -60,6 +60,7 @@ const main = async () => {
 }
 
 main().catch(e => {
+	console.error(e)
 	page.screenshot({ path: '/usr/src/app/error.png' }).finally(() => {
 		console.error(e)
 		process.exit(1)

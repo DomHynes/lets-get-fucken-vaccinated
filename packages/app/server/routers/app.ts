@@ -1,10 +1,8 @@
 import { router } from '@trpc/server'
 import superjson from 'superjson'
+import { z } from 'zod'
 import { Context } from '../../utils/context'
 import prisma from '../../utils/prisma'
-import { batchRouter } from './batch'
-import { string, z } from 'zod'
-import { Prisma } from '.prisma/client'
 
 export const appRouter = router<Context>()
 	.transformer(superjson)
@@ -97,7 +95,6 @@ export const appRouter = router<Context>()
 			return a
 		},
 	})
-	.merge('batch', batchRouter)
 
 // export type definition of API
 export type AppRouter = typeof appRouter

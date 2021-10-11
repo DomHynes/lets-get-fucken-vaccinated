@@ -1,4 +1,4 @@
-import { launch, Page, Browser } from 'puppeteer'
+import { launch, Page, Browser, ElementHandle } from 'puppeteer'
 import { getEmails } from '../services/emails'
 import { convertSpeechToText } from '../services/speech-to-text'
 import { uploadToBucket } from '../services/storage'
@@ -6,8 +6,11 @@ import { uploadToBucket } from '../services/storage'
 import { readFileSync, readdirSync, unlinkSync } from 'fs'
 import { AxiosError } from 'axios'
 import { parse } from 'date-fns'
-import { utcToZonedTime } from 'date-fns-tz'
 import { client } from '../services/client'
+
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient({ log: ['info', 'query'] })
 
 export const init = async () => {
 	const browser = await launch({ headless: true, args: ['--no-sandbox'] })
@@ -158,7 +161,7 @@ export const clickThroughVax = async ({ page }: { page: Page }) => {
 
 export const getProviderIds = async ({ page }: { page: Page }) => {
 	await page.waitForSelector('tbody')
-	const providers = await page.evaluate(() => {
+	let providers = await page.evaluate(() => {
 		const uuidRegex = /[\w\d]+-[\w\d]+-[\w\d]+-[\w\d]+-[\w\d]+/g
 
 		return Array.from(document.querySelectorAll('.providerrows'), e => ({
@@ -186,31 +189,101 @@ export const processProvider = async ({
 		onClick: string
 	}
 }) => {
+	console.log(`handling onclick for: ${provider.id}`)
 	await page.evaluate(provider.onClick)
 	await page.waitForTimeout(3000)
-	const appointments = await page.evaluate(() =>
-		Array.from(
-			document.querySelectorAll('.vrasTimeSlot'),
-			e => e.textContent as string,
-		),
-	)
+	let appointments: string[] = []
+	let nextButton: ElementHandle<Element> | null
+
+	do {
+		nextButton = null
+		try {
+			nextButton = await page.waitForSelector('#vras_btn_next_page')
+			console.log('found button')
+			const disabled = await nextButton?.evaluate(
+				e => e.getAttribute('disabled') === '',
+			)
+
+			if (disabled) {
+				console.log('button disabled')
+				nextButton = null
+			}
+		} catch (e) {
+			console.log(`no next button for: ${provider.id}`)
+		}
+
+		console.log('finding appointments on page')
+		const appointmentsPage = await page.evaluate(() =>
+			Array.from(
+				document.querySelectorAll('.vrasTimeSlot'),
+				e => e.textContent as string,
+			),
+		)
+
+		appointments.push(...appointmentsPage)
+
+		if (!nextButton) {
+			console.log('no next page')
+		} else {
+			console.log('going to next page')
+			await nextButton.click()
+			await page.waitForTimeout(1000)
+		}
+	} while (nextButton)
 
 	const centreAppointments = appointments.map(a =>
-		parse(a, 'dd-MM-yyyy hh:mm a', new Date()).toISOString(),
+		parse(a, 'dd-MM-yyyy hh:mm a', new Date()),
 	)
 
-	await client
-		.mutation('batchappointmentsForCentre', {
-			centreId: provider.id,
-			times: centreAppointments,
-		})
-		.catch((e: AxiosError) => console.log(e))
+	console.log(
+		`found ${centreAppointments.length} appointments for ${provider.id}`,
+	)
+
+	await updateAppointmentsForCentre({
+		centreId: provider.id,
+		times: centreAppointments,
+	})
 
 	await page.waitForSelector('.btn.btn-default.submit-btn.VICbtn-ghost')
 	await page.click('.btn.btn-default.submit-btn.VICbtn-ghost')
 	await page.waitForTimeout(3000)
 }
 
+export const updateAppointmentsForCentre = async ({
+	centreId,
+	times,
+}: {
+	centreId: string
+	times: Date[]
+}) => {
+	await prisma.appointment.updateMany({
+		data: {
+			available: false,
+		},
+		where: {
+			centreId,
+			time: {
+				notIn: times,
+			},
+		},
+	})
+	await prisma.appointment.updateMany({
+		data: {
+			available: true,
+		},
+		where: {
+			centreId,
+			time: {
+				in: times,
+			},
+		},
+	})
+
+	await prisma.appointment.createMany({
+		data: times.map(time => ({ centreId, time, available: true })),
+		skipDuplicates: true,
+	})
+}
 export const processCentres = async ({
 	centres,
 }: {
@@ -225,6 +298,10 @@ export const processCentres = async ({
 	})
 
 	for (const centre of newCentres) {
-		await client.mutation('batchcentre', centre)
+		await prisma.centre.upsert({
+			create: centre,
+			where: { id: centre.id },
+			update: { name: centre.name },
+		})
 	}
 }
