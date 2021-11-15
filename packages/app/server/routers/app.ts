@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { router } from '@trpc/server'
 import superjson from 'superjson'
 import { z } from 'zod'
